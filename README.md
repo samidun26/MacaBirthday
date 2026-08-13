@@ -1,1 +1,169 @@
-# MacaBirthday
+# HER v21.0 — A Birthday Build
+
+An interactive birthday surprise: five puzzles and a final authentication that unlock a
+secret Instagram account. It's dressed as a piece of developer tooling — boot sequence,
+git diff, type specimen, SQL console — because that's the language she actually speaks.
+
+She solves puzzles → the build "deploys" → the account is revealed → the message lands.
+
+---
+
+## 1. Run it
+
+```bash
+npm install
+npm run dev          # http://localhost:5173
+```
+
+`npm run dev` also serves on your local network, so you can open it on your phone while
+you're editing.
+
+---
+
+## 2. Customize it
+
+**Everything lives in one file: [`src/birthday.config.js`](src/birthday.config.js).**
+
+Open it and replace anything marked `★ CHANGE ME`. You never need to touch the app code.
+The puzzles regenerate themselves from the config — change the git word from `maca` to
+`love` and the fake commit rewrites its own diff to spell L-O-V-E.
+
+The 15-minute version, in priority order:
+
+| What | Where in the config | Why it matters |
+| --- | --- | --- |
+| Her name, your name, her age | section 1 | used everywhere |
+| The Instagram account | section 2 | the payoff |
+| The final message | section 3 | the part she'll screenshot |
+| The menu (puzzle 04) | `puzzles.food` | the most fun one to personalize |
+| The memory question (puzzle 05) | `puzzles.memory` | the most personal one |
+| Boot sequence lines | `bootLines` | inside jokes land really well here |
+
+### The puzzles, and what each one needs from you
+
+| # | Puzzle | Answer comes from | Notes |
+| --- | --- | --- | --- |
+| 01 | Binary → ASCII | `puzzles.binary.word` | Deliberately easy. It teaches the format. |
+| 02 | Git commit | `puzzles.git.word` | The added `+` lines spell it as an acrostic. Any A–Z word works. |
+| 03 | Type specimen | `puzzles.design.word` | A few glyphs sit 3px off the baseline. A **Guides** toggle in the toolbar exposes them. |
+| 04 | Birthday menu | `puzzles.food.courses[].correct` | She picks one dish per course. |
+| 05 | Memory database | `puzzles.memory.answer` | The only puzzle that can't be reasoned out. |
+| — | Final auth | `puzzles.finalAuth.answer` | Answer: Instagram. |
+
+**Two things worth knowing about puzzle 04.** The first letters of the correct dishes
+spell a word (by default: **C-A-K-E**). That gives her two ways in — knowing her own
+taste, or spotting the pattern — and makes it self-verifying instead of guesswork. If your
+dishes don't spell anything, set `orderCodeIsWord: false` and it becomes a pure "do you
+know her?" puzzle. Everything stays in sync either way.
+
+**Answer matching is forgiving.** Case, spaces, punctuation and accents are all ignored,
+and each puzzle takes a list of `alsoAccept` alternates. Add every phrasing you'd accept —
+she should never lose to a typo.
+
+**Every puzzle has hints**, revealed one at a time, ending close to a giveaway. Nobody gets
+stuck on a birthday present.
+
+---
+
+## 3. Hide the secret properly (optional, recommended)
+
+By default the Instagram handle sits in the config in plain text — which means it's also in
+the built JavaScript. She's a programmer. If there's any chance she pokes at the source
+before finishing, close that door:
+
+```bash
+npm run lock
+```
+
+It asks for the username and URL, encrypts them behind the answers to her own six puzzles,
+writes the result to `secretPayload`, and blanks the plain-text fields. The account
+genuinely cannot be decrypted without solving the puzzles — verified: after locking, the
+handle appears nowhere in `dist/`.
+
+Non-interactive if you prefer:
+
+```bash
+npm run lock -- --username "@her.secret.acct" --url "https://instagram.com/her.secret.acct/"
+```
+
+The answers **are** the key, so re-run `npm run lock` any time you change a puzzle answer.
+If you forget, the reveal screen shows a warning telling you exactly that — and only you
+would ever see it, since it means the build isn't finished.
+
+This is obfuscation, not cryptography. It defeats "View Source", which is the only attacker
+that matters here.
+
+---
+
+## 4. Deploy it
+
+```bash
+npm run build        # output lands in dist/
+```
+
+`dist/` uses relative paths, so it works from any URL or subdirectory.
+
+**Netlify (drag and drop)** — go to [app.netlify.com/drop](https://app.netlify.com/drop)
+and drag the `dist` folder onto the page. You get a live HTTPS link in about ten seconds.
+Rename the site in *Site settings → Change site name* to something less random.
+
+**Vercel** — `npx vercel --prod` from the project root, or import the repo at
+[vercel.com/new](https://vercel.com/new). Vercel detects Vite automatically; the defaults
+(`npm run build` → `dist`) are correct.
+
+Either way: **open the link on your own phone first and play the whole thing through.**
+That's the last real test.
+
+---
+
+## 5. Notes
+
+**Mobile.** Built phone-first and verified on an iPhone viewport: safe-area insets for the
+notch and home indicator, `100dvh` so the layout doesn't jump when Safari's bar collapses,
+16px inputs so iOS never zooms on focus, and 44px touch targets throughout.
+
+**Progress is saved.** If her phone locks or she closes the tab mid-puzzle, the title screen
+offers to resume. Turn it off with `options.saveProgress: false`.
+
+**Sound is off by default** and never autoplays. The toggle is in the header. Every tone is
+synthesised — no audio files. The experience is designed to be complete in silence.
+
+**Reduced motion** is respected everywhere: the boot sequence resolves instantly, confetti
+doesn't run, animations collapse.
+
+**Easter eggs** (none required to finish):
+
+- Konami code — ↑ ↑ ↓ ↓ ← → ← → B A
+- Tap the version badge in the header 21 times
+- The `//` at the right of the status bar
+- Open the browser console
+
+**Testing shortcut.** `?step=<id>` jumps straight to any screen —
+`?step=food`, `?step=reveal`, and so on. IDs are `boot`, `title`, `binary`, `git`,
+`design`, `food`, `memory`, `auth`, `reveal`. Progress isn't saved in this mode. She has no
+reason to find it, but don't send her a link with it attached.
+
+**Accessibility caveat.** Puzzle 03 is visual by nature and can't be solved by a screen
+reader. Its hints describe the mechanism, but the answer isn't in the DOM — that's a
+deliberate trade against spoiling it for someone who opens DevTools.
+
+---
+
+## 6. Layout
+
+```
+src/
+  birthday.config.js     ← the only file you need to edit
+  App.jsx                flow state machine, easter eggs, persistence
+  components/            Shell, PuzzleFrame, HintPanel, Toast, Modal
+  screens/               one file per screen, in flow order
+  lib/                   puzzle generators, cipher, audio, confetti
+  styles/                tokens → base → components → screens
+scripts/lock.mjs         encrypts the secret behind her answers
+```
+
+`PuzzleFrame` is the chassis every puzzle sits in — header, answer field, wrong-answer
+feedback, hints, success banner, advance button. Puzzles supply only their own middle
+section, which is why all five feel like the same piece of software.
+
+Happy birthday to her. 🎂
