@@ -8,7 +8,7 @@
  * Honours `prefers-reduced-motion` by simply not running.
  */
 
-const PALETTE = ['#ff2e88', '#29e7ff', '#ffe66d', '#a855f7', '#3dffa0', '#ff6b35'];
+const PALETTE = ['#e8558d', '#ff9ec4', '#b295f5', '#ffd98e', '#6fd3b0', '#ffffff'];
 
 export function burstConfetti(canvas, { pieces = 150, duration = 3000 } = {}) {
   if (!canvas) return () => {};

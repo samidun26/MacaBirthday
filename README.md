@@ -3,8 +3,8 @@
 An interactive birthday surprise: five puzzles and a final authentication that unlock a
 secret Instagram account. It's dressed as a piece of developer tooling — boot sequence,
 git diff, type specimen, SQL console — because that's the language she actually speaks,
-and the whole thing runs inside a simulated CRT: pixel type, neon sunset, scanlines, and
-a scrolling grid horizon.
+drawn as pixel art in a bakery palette: buttercream and strawberry, with cakes, cupcakes,
+flowers and hearts drifting behind the interface.
 
 She solves puzzles → the build "deploys" → the account is revealed → the message lands.
 
@@ -120,21 +120,31 @@ That's the last real test.
 
 ## 5. Notes
 
-**Look and feel.** Early-80s arcade cabinet. Two bitmap typefaces (Press Start 2P for
-headings and chrome, VT323 for body copy and terminals), a synthwave palette, zero rounded
-corners, borders drawn as stacked box-shadows so every edge lands on a whole pixel, buttons
-that drop into their own shadow when pressed, and stepped rather than eased motion. The
-sliced sun and perspective grid sit behind the cabinet; scanlines, vignette and a slow
-flicker sit in front of everything, modals included.
+**Look and feel.** Pixel bakery. Two bitmap typefaces (Press Start 2P for headings and
+chrome, VT323 for body copy and terminals), a buttercream-and-strawberry palette, zero
+rounded corners, borders drawn as stacked box-shadows so every edge lands on a whole pixel,
+buttons that drop into their own shadow when pressed, and stepped rather than eased motion.
+
+The backdrop is hand-drawn pixel art — cakes, cupcakes, flowers, cherries, hearts and
+sparkles as inline SVG on an integer grid with `crispEdges`, so they stay genuinely
+pixel-art at any size instead of blurring. No image files. Cards are opaque, so sprites
+that land behind one are simply hidden and never fight the text.
 
 **Fonts are bundled, not fetched** — no third-party request on the critical path, and the
 page renders correctly offline. Both are SIL Open Font License; see
 [LICENSES-FONTS.md](LICENSES-FONTS.md). Only the `latin` subset loads unless the text needs
 `latin-ext`, so it costs about 30 KB.
 
-**Mobile.** Built phone-first and verified on an iPhone viewport: safe-area insets for the
-notch and home indicator, `100dvh` so the layout doesn't jump when Safari's bar collapses,
-16px inputs so iOS never zooms on focus, and 44px touch targets throughout.
+**Responsive.** Type is fluid (`clamp`) rather than stepped between breakpoints, so
+nothing jumps at a threshold. Safe-area insets for the notch and home indicator, `100dvh`
+so the layout doesn't move when Safari's bar collapses, 20px inputs so iOS never zooms on
+focus, and 44px touch targets throughout. Dedicated handling for small phones (≤380px), a
+short-viewport rule for phones in landscape, and a framed layout from 900px up — a wider
+screen gets more room around the box, not a wider box.
+
+Verified clean across ten viewports (320px through 1920px, both orientations) on all eight
+screens: no horizontal overflow, nothing painting outside the viewport, no clipped text and
+no control under 40px.
 
 **Progress is saved.** If her phone locks or she closes the tab mid-puzzle, the title screen
 offers to resume. Turn it off with `options.saveProgress: false`.
@@ -169,7 +179,7 @@ deliberate trade against spoiling it for someone who opens DevTools.
 src/
   birthday.config.js     ← the only file you need to edit
   App.jsx                flow state machine, easter eggs, persistence
-  components/            Shell, PuzzleFrame, HintPanel, Toast, Modal, CrtScreen
+  components/            Shell, PuzzleFrame, HintPanel, Toast, Modal, PartyBackdrop
   screens/               one file per screen, in flow order
   lib/                   puzzle generators, cipher, audio, confetti
   styles/                fonts → tokens → base → components → screens
@@ -177,8 +187,10 @@ src/
 scripts/lock.mjs         encrypts the secret behind her answers
 ```
 
-Re-skinning is still a single-file job: the palette, both typefaces, the pixel-border
-recipe and the motion tokens all live at the top of `src/styles/tokens.css`.
+Re-skinning is a single-file job: the palette, both typefaces, the pixel-border recipe and
+the motion tokens all live at the top of `src/styles/tokens.css`. The background sprites and
+their scatter positions are one array at the bottom of
+`src/components/PartyBackdrop.jsx` — add, remove or move them there.
 
 `PuzzleFrame` is the chassis every puzzle sits in — header, answer field, wrong-answer
 feedback, hints, success banner, advance button. Puzzles supply only their own middle

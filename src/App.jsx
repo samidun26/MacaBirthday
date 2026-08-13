@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { BIRTHDAY_CONFIG } from './birthday.config.js';
 import { Shell } from './components/Shell.jsx';
-import { CrtBackdrop, CrtOverlay } from './components/CrtScreen.jsx';
+import { PartyBackdrop, PaperOverlay } from './components/PartyBackdrop.jsx';
 import { Modal } from './components/Modal.jsx';
 import { ToastLayer } from './components/Toast.jsx';
 import { BootScreen } from './screens/BootScreen.jsx';
@@ -100,12 +100,12 @@ export default function App() {
   useEffect(() => {
     console.log(
       '%cHey developer 👀',
-      'color:#FF7EB6;font-size:18px;font-weight:700;letter-spacing:0.04em',
+      'color:#e8558d;font-size:18px;font-weight:700;letter-spacing:0.04em',
     );
-    console.log('%cHappy birthday ❤️', 'color:#B79CFF;font-size:14px');
+    console.log('%cHappy birthday ❤️', 'color:#7c4fe0;font-size:14px');
     console.log(
       '%cYes, this whole thing is hand-built. No, the answers are not in here. Mostly.',
-      'color:#676779;font-size:11px;font-style:italic',
+      'color:#8d6575;font-size:11px;font-style:italic',
     );
   }, []);
 
@@ -255,7 +255,7 @@ export default function App() {
 
   return (
     <>
-      <CrtBackdrop />
+      <PartyBackdrop />
 
       <Shell
         fileName={current.file}
@@ -276,7 +276,7 @@ export default function App() {
 
       <ToastLayer toasts={toasts} onExpire={expireToast} />
 
-      <CrtOverlay />
+      <PaperOverlay />
 
       {showTodo ? (
         <Modal title="// notes.txt" onClose={() => setShowTodo(false)}>

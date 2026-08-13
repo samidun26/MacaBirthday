@@ -1,10 +1,9 @@
 /* ============================================================================
- * RESET + THE CRT
+ * RESET + BACKDROP
  *
- * Everything renders inside a simulated cathode-ray tube: a scrolling neon
- * grid and a sliced sun behind the content, scanlines and a vignette in front
- * of it. The overlay sits above every layer including modals, because the
- * whole screen is meant to be the monitor.
+ * A soft blush page with sprinkles and drifting pixel sweets behind the
+ * content. Cards are opaque, so the pattern frames the interface rather than
+ * competing with it.
  * ========================================================================== */
 
 *,
@@ -20,7 +19,7 @@
 
 html {
   -webkit-text-size-adjust: 100%;
-  background: var(--bg-deep);
+  background: var(--bg);
 }
 
 body {
@@ -30,123 +29,71 @@ body {
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.5;
-  /* Pixel fonts must NOT be smoothed — antialiasing is what makes a bitmap
-   * face look muddy instead of sharp. */
+  /* Bitmap type must NOT be smoothed — antialiasing is what turns a pixel face
+   * muddy instead of sharp. */
   -webkit-font-smoothing: none;
   font-smooth: never;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
-  text-rendering: optimizeSpeed;
 }
 
 /* ---------------------------------------------------------------- backdrop */
 
-.crt-backdrop {
+.backdrop {
   position: fixed;
   z-index: 0;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(120ch 70ch at 50% 118%, rgba(255, 46, 136, 0.22), transparent 62%),
-    radial-gradient(90ch 60ch at 12% -12%, rgba(124, 58, 237, 0.28), transparent 60%);
+    radial-gradient(90ch 60ch at 15% -10%, rgba(255, 217, 142, 0.4), transparent 60%),
+    radial-gradient(80ch 60ch at 92% 8%, rgba(178, 149, 245, 0.26), transparent 58%),
+    radial-gradient(100ch 70ch at 50% 112%, rgba(255, 158, 196, 0.42), transparent 62%),
+    linear-gradient(180deg, #fffaf6 0%, var(--bg) 45%, #ffe9f2 100%);
 }
 
-/* The sun: a disc sliced by horizontal bands, sitting on the horizon. */
-.crt-sun {
+/* Hundreds-and-thousands, scattered by overlaying three offset dot grids at
+ * different scales so the repeat never reads as a grid. */
+.backdrop__sprinkles {
   position: absolute;
-  bottom: 34vh;
-  left: 50%;
-  width: min(360px, 76vw);
-  height: min(360px, 76vw);
-  transform: translateX(-50%);
-  background: var(--sunset);
-  opacity: 0.5;
-  border-radius: 50%;
-  /* Slices get wider toward the bottom, the way every 80s poster did it. */
-  mask-image: linear-gradient(
-    to bottom,
-    #000 0 52%,
-    transparent 52% 55%,
-    #000 55% 64%,
-    transparent 64% 68%,
-    #000 68% 76%,
-    transparent 76% 81%,
-    #000 81% 87%,
-    transparent 87% 94%,
-    #000 94% 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    #000 0 52%,
-    transparent 52% 55%,
-    #000 55% 64%,
-    transparent 64% 68%,
-    #000 68% 76%,
-    transparent 76% 81%,
-    #000 81% 87%,
-    transparent 87% 94%,
-    #000 94% 100%
-  );
-}
-
-/* The floor. Perspective on the wrapper, translation on the inner layer, so
- * the scroll is a composited transform rather than a full-page repaint. */
-.crt-grid {
-  position: absolute;
-  bottom: 0;
-  left: -60%;
-  width: 220%;
-  height: 42vh;
-  overflow: hidden;
-  transform: perspective(320px) rotateX(74deg);
-  transform-origin: bottom center;
-  mask-image: linear-gradient(to top, #000 12%, transparent 82%);
-  -webkit-mask-image: linear-gradient(to top, #000 12%, transparent 82%);
-}
-
-.crt-grid__inner {
-  position: absolute;
-  inset: -100% 0 0;
+  inset: 0;
+  opacity: 0.75;
   background-image:
-    repeating-linear-gradient(to right, rgba(41, 231, 255, 0.55) 0 2px, transparent 2px 72px),
-    repeating-linear-gradient(to bottom, rgba(255, 46, 136, 0.5) 0 2px, transparent 2px 72px);
-  animation: grid-scroll 2.4s linear infinite;
-  will-change: transform;
+    radial-gradient(circle, rgba(232, 85, 141, 0.5) 1.6px, transparent 1.7px),
+    radial-gradient(circle, rgba(178, 149, 245, 0.45) 1.6px, transparent 1.7px),
+    radial-gradient(circle, rgba(255, 176, 46, 0.42) 1.6px, transparent 1.7px),
+    radial-gradient(circle, rgba(111, 211, 176, 0.4) 1.6px, transparent 1.7px);
+  background-size: 96px 96px, 132px 132px, 168px 168px, 210px 210px;
+  background-position: 0 0, 44px 62px, 96px 22px, 150px 118px;
 }
 
-/* ----------------------------------------------------------------- overlay */
+.sprite {
+  position: absolute;
+  display: block;
+  opacity: 0.6;
+  animation: bob 5s steps(4) infinite;
+}
 
-.crt-overlay {
+.sprite svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------------------------------------------------------------- overlay */
+
+.paper-overlay {
   position: fixed;
-  z-index: 9999;
+  z-index: 9998;
   inset: 0;
   pointer-events: none;
 }
 
-.crt-scanlines {
+/* Barely-there corner shading so the page reads as a surface, not a flat fill. */
+.paper-overlay__vignette {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.32) 0 1px,
-    transparent 1px 3px
-  );
-  opacity: 0.7;
-}
-
-/* Darkened corners — the tube was never flat. */
-.crt-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(140% 110% at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.72) 100%);
-}
-
-.crt-flicker {
-  position: absolute;
-  inset: 0;
-  background: rgba(180, 140, 255, 0.045);
-  animation: flicker 5.5s steps(2, end) infinite;
+  background: radial-gradient(150% 120% at 50% 45%, transparent 58%, rgba(180, 108, 140, 0.16) 100%);
 }
 
 #root {
@@ -171,17 +118,17 @@ input {
 }
 
 a {
-  color: var(--magenta);
+  color: var(--pink-deep);
   text-decoration: none;
 }
 
 ::selection {
-  background: var(--magenta);
-  color: #12001a;
+  background: var(--pink);
+  color: #45202c;
 }
 
 :focus-visible {
-  outline: 3px solid var(--cyan);
+  outline: 3px solid var(--lavender-deep);
   outline-offset: 3px;
 }
 
@@ -189,10 +136,9 @@ a {
   font-family: var(--font-mono);
 }
 
-/* Chunky, squared-off scrollbar. */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--violet) var(--bg-deep);
+  scrollbar-color: var(--pink) var(--surface-3);
 }
 
 *::-webkit-scrollbar {
@@ -201,12 +147,12 @@ a {
 }
 
 *::-webkit-scrollbar-track {
-  background: var(--bg-deep);
+  background: var(--surface-3);
 }
 
 *::-webkit-scrollbar-thumb {
-  background: var(--violet);
-  border: 2px solid var(--bg-deep);
+  background: var(--pink);
+  border: 2px solid var(--surface-3);
 }
 
 .visually-hidden {
@@ -222,12 +168,17 @@ a {
   border: 0;
 }
 
-/* Red/cyan fringing, like a slightly misconverged tube. */
-.chroma {
-  text-shadow: -2px 0 rgba(255, 40, 90, 0.55), 2px 0 rgba(41, 231, 255, 0.45);
-}
-
 /* ---------------------------------------------------------------- animations */
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
 
 @keyframes blink {
   0%,
@@ -237,26 +188,6 @@ a {
   50%,
   100% {
     opacity: 0;
-  }
-}
-
-@keyframes flicker {
-  0%,
-  92%,
-  100% {
-    opacity: 0.5;
-  }
-  94% {
-    opacity: 1;
-  }
-  96% {
-    opacity: 0.25;
-  }
-}
-
-@keyframes grid-scroll {
-  to {
-    transform: translateY(72px);
   }
 }
 
@@ -330,7 +261,6 @@ a {
   }
 }
 
-/* A bright band sweeping down, like a tube refreshing. */
 @keyframes sheen {
   from {
     transform: translateX(-120%);
@@ -347,16 +277,16 @@ a {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.55;
   }
 }
 
-@keyframes neon-throb {
+@keyframes candy-throb {
   0%,
   100% {
-    box-shadow: var(--pixel-border-neon), var(--drop-sm), 0 0 18px rgba(255, 46, 136, 0.5);
+    box-shadow: var(--pixel-border-pink), var(--drop-sm), 0 0 16px rgba(232, 85, 141, 0.35);
   }
   50% {
-    box-shadow: var(--pixel-border-neon), var(--drop-sm), 0 0 34px rgba(255, 46, 136, 0.95);
+    box-shadow: var(--pixel-border-pink), var(--drop-sm), 0 0 30px rgba(232, 85, 141, 0.6);
   }
 }

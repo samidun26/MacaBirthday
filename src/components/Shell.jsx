@@ -89,19 +89,19 @@ export function Shell({
         <main className="shell__body">{children}</main>
 
         <footer className="statusbar">
-          <span className="statusbar__item" title="current branch">
+          <span className="statusbar__item statusbar__item--branch" title="current branch">
             <span aria-hidden="true">⑂</span>
             {branchLabel}
           </span>
           <span className="statusbar__item">
-            <span aria-hidden="true" style={{ color: 'var(--green)' }}>
+            <span aria-hidden="true" style={{ color: 'var(--mint-deep)' }}>
               ✓
             </span>
             {solvedCount} solved
           </span>
           {hintsUsed > 0 ? (
-            <span className="statusbar__item">
-              <span aria-hidden="true" style={{ color: 'var(--lavender)' }}>
+            <span className="statusbar__item statusbar__item--hints">
+              <span aria-hidden="true" style={{ color: 'var(--lavender-deep)' }}>
                 ◆
               </span>
               {hintsUsed} {hintsUsed === 1 ? 'hint' : 'hints'}
