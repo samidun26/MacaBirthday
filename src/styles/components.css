@@ -1,0 +1,929 @@
+/* ============================================================================
+ * SHELL + SHARED COMPONENTS — pixel bakery
+ *
+ * Borders are stacked box-shadows, shadows are hard rose offsets with no blur,
+ * and every button drops into its own shadow when pressed.
+ *
+ * The shell itself is transparent: cards, header and status bar carry their own
+ * opaque backgrounds, so the sprinkles and sweets show through everywhere else.
+ * ========================================================================== */
+
+.app {
+  position: relative;
+  /* The backdrop is a positioned sibling inside #root; without an explicit
+   * layer here it would paint straight over this (static) content. */
+  z-index: 1;
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+.shell {
+  display: flex;
+  width: 100%;
+  max-width: var(--shell-width);
+  flex: 1;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------------ header */
+
+.shell__header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, #ffffff, var(--surface-2));
+  border-bottom: 4px solid var(--line-bright);
+  padding-top: env(safe-area-inset-top);
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.titlebar__dots {
+  display: flex;
+  flex-shrink: 0;
+  gap: 5px;
+}
+
+/* Square, because pixels don't curve. */
+.titlebar__dot {
+  width: 10px;
+  height: 10px;
+}
+
+.titlebar__dot:nth-child(1) {
+  background: var(--pink-deep);
+}
+.titlebar__dot:nth-child(2) {
+  background: var(--butter);
+}
+.titlebar__dot:nth-child(3) {
+  background: var(--mint);
+}
+
+.titlebar__file {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.titlebar__file strong {
+  color: var(--pink-deep);
+  font-weight: 400;
+}
+
+.titlebar__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.version-badge {
+  padding: 7px 8px;
+  background: var(--surface-3);
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1;
+  box-shadow: 0 -2px 0 var(--line), 0 2px 0 var(--line), -2px 0 0 var(--line), 2px 0 0 var(--line);
+  transition: color var(--duration-fast) var(--ease-out);
+  user-select: none;
+}
+
+.version-badge:hover {
+  color: var(--pink-deep);
+}
+
+.version-badge:active {
+  transform: translate(2px, 2px);
+}
+
+.version-badge--near {
+  color: var(--butter-deep);
+  animation: blink 0.55s steps(1) infinite;
+}
+
+.icon-btn {
+  display: inline-flex;
+  min-width: 40px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  background: var(--surface-3);
+  color: var(--text-faint);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1;
+  box-shadow: 0 -2px 0 var(--line), 0 2px 0 var(--line), -2px 0 0 var(--line), 2px 0 0 var(--line);
+  transition: color var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
+}
+
+.icon-btn:hover {
+  color: var(--text-dim);
+}
+
+.icon-btn[data-active='true'] {
+  color: var(--mint-deep);
+}
+
+/* -------------------------------------------------------------- stage rail */
+
+.rail {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-3);
+}
+
+.rail__steps {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Candy blocks that fill in as she clears stages. */
+.rail__step {
+  position: relative;
+  height: 12px;
+  flex: 1;
+  min-width: 8px;
+  background: var(--surface-3);
+  box-shadow: 0 -2px 0 var(--line), 0 2px 0 var(--line), -2px 0 0 var(--line), 2px 0 0 var(--line);
+  transition: background var(--duration) var(--ease-out);
+}
+
+.rail__step[data-state='done'] {
+  background: var(--pink-deep);
+  box-shadow: 0 -2px 0 var(--pink-deep), 0 2px 0 var(--pink-deep), -2px 0 0 var(--pink-deep),
+    2px 0 0 var(--pink-deep);
+}
+
+.rail__step[data-state='active'] {
+  background: var(--lavender);
+  box-shadow: 0 -2px 0 var(--lavender-deep), 0 2px 0 var(--lavender-deep),
+    -2px 0 0 var(--lavender-deep), 2px 0 0 var(--lavender-deep);
+  animation: pulse-block 0.9s steps(2, start) infinite;
+}
+
+.rail__label {
+  flex-shrink: 0;
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1;
+}
+
+.rail__label b {
+  color: var(--pink-deep);
+  font-weight: 400;
+}
+
+/* -------------------------------------------------------------------- body */
+
+.shell__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-6) var(--space-5);
+}
+
+/* ------------------------------------------------------------- status bar */
+
+.statusbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-top: 4px solid var(--line-bright);
+  background: linear-gradient(180deg, var(--surface-2), #ffffff);
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1;
+}
+
+.statusbar__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+/* The branch name is the only thing here that can get long. */
+.statusbar__item--branch {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statusbar__spacer {
+  flex: 1;
+}
+
+.statusbar__egg {
+  color: var(--text-faint);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  opacity: 0.6;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.statusbar__egg:hover {
+  color: var(--pink-deep);
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.card {
+  position: relative;
+  padding: var(--space-5);
+  background: var(--surface);
+  box-shadow: var(--pixel-border), var(--drop);
+}
+
+.card__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  color: var(--pink-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-sm);
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.card__title {
+  margin-bottom: var(--space-3);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--display-md);
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+.card__lede {
+  color: var(--text-dim);
+  font-size: var(--text-base);
+}
+
+/* The machine talking. A lilac note pinned to the card. */
+.sysmsg {
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  background: #faf5ff;
+  color: var(--text);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  box-shadow: var(--pixel-border-lav);
+}
+
+.sysmsg__label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--lavender-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-3);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--display-md);
+  font-weight: 400;
+  line-height: 1.6;
+  overflow: hidden;
+  box-shadow: var(--pixel-border), var(--drop-sm);
+  transition: transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+  text-transform: uppercase;
+  /* Long labels must wrap rather than push the page sideways. */
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.btn:hover {
+  background: var(--pink-soft);
+}
+
+/* Pressed: the button drops into its own shadow. */
+.btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: var(--pixel-border), 0 0 0 var(--shadow-hard);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  color: var(--text-faint);
+  opacity: 0.6;
+  transform: none;
+}
+
+.btn--primary {
+  background: var(--pink-deep);
+  color: #fff;
+  box-shadow: var(--pixel-border-pink), var(--drop-sm);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #f2699e;
+  color: #fff;
+}
+
+.btn--primary:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: var(--pixel-border-pink), 0 0 0 var(--shadow-hard);
+}
+
+.btn--primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 36%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.btn--primary:hover:not(:disabled)::after {
+  animation: sheen 0.6s steps(8, end);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text-dim);
+  box-shadow: 0 -2px 0 var(--line), 0 2px 0 var(--line), -2px 0 0 var(--line), 2px 0 0 var(--line);
+}
+
+.btn--ghost:hover {
+  background: var(--surface-3);
+  color: var(--pink-deep);
+}
+
+.btn--ghost:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 -2px 0 var(--line), 0 2px 0 var(--line), -2px 0 0 var(--line), 2px 0 0 var(--line);
+}
+
+.btn--lg {
+  min-height: 60px;
+  padding: var(--space-4) var(--space-5);
+  font-size: var(--display-lg);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------------ input */
+
+.answer {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.answer__field {
+  position: relative;
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.answer__input {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: var(--font-body);
+  /* 20px keeps VT323 legible and stays above the 16px iOS zoom threshold. */
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  caret-color: var(--pink-deep);
+  box-shadow: var(--pixel-border);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+  outline: none;
+  text-transform: uppercase;
+}
+
+.answer__input::placeholder {
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.answer__input:focus {
+  box-shadow: var(--pixel-border-lav);
+}
+
+.answer[data-state='error'] {
+  animation: shake 0.36s steps(3, end);
+}
+
+.answer[data-state='error'] .answer__input {
+  color: var(--berry);
+  box-shadow: 0 -4px 0 var(--berry), 0 4px 0 var(--berry), -4px 0 0 var(--berry),
+    4px 0 0 var(--berry);
+}
+
+.answer[data-state='success'] .answer__input {
+  box-shadow: var(--pixel-border-mint);
+}
+
+/* --------------------------------------------------------------- feedback */
+
+.feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.4;
+  animation: fade-up var(--duration) var(--ease-out);
+}
+
+.feedback--error {
+  color: var(--berry);
+}
+
+.feedback--success {
+  color: var(--mint-deep);
+}
+
+.feedback--muted {
+  color: var(--text-dim);
+}
+
+/* ------------------------------------------------------------------ hints */
+
+.hint {
+  margin-top: var(--space-5);
+}
+
+.hint__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 14px;
+  background: #fffaef;
+  color: var(--butter-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1.4;
+  box-shadow: 0 -2px 0 var(--butter), 0 2px 0 var(--butter), -2px 0 0 var(--butter),
+    2px 0 0 var(--butter);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.hint__toggle:hover {
+  background: #fff3d6;
+}
+
+.hint__toggle:active {
+  transform: translate(2px, 2px);
+}
+
+.hint__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: #fffaef;
+  color: var(--text);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  box-shadow: 0 -2px 0 var(--butter), 0 2px 0 var(--butter), -2px 0 0 var(--butter),
+    2px 0 0 var(--butter);
+  animation: fade-up var(--duration) var(--ease-out);
+}
+
+.hint__icon {
+  flex-shrink: 0;
+  color: var(--butter-deep);
+}
+
+.hint__label {
+  color: var(--butter-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+}
+
+/* ------------------------------------------------------- stage clear panel */
+
+.success {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: #f2fdf8;
+  box-shadow: var(--pixel-border-mint);
+  animation: pixel-pop var(--duration) var(--ease-out);
+}
+
+.success__ring {
+  position: relative;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-items: center;
+  box-shadow: 0 -3px 0 var(--mint), 0 3px 0 var(--mint), -3px 0 0 var(--mint), 3px 0 0 var(--mint);
+}
+
+.success__ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 -3px 0 var(--mint), 0 3px 0 var(--mint), -3px 0 0 var(--mint), 3px 0 0 var(--mint);
+  animation: pulse-ring 1.2s steps(6, end) 0.1s;
+}
+
+.success__check {
+  width: 20px;
+  height: 20px;
+  stroke: var(--mint-deep);
+  stroke-width: 3;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  fill: none;
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+  animation: draw-check 0.3s steps(6, end) 0.1s forwards;
+}
+
+.success__text strong {
+  display: block;
+  color: var(--mint-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-sm);
+  font-weight: 400;
+  line-height: 1.7;
+  text-transform: uppercase;
+}
+
+.success__text span {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.4;
+}
+
+/* ------------------------------------------------------------------ toast */
+
+.toast-layer {
+  position: fixed;
+  z-index: 100;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-5);
+  transform: translateX(-50%);
+  pointer-events: none;
+  width: 100%;
+  max-width: 440px;
+}
+
+.toast {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--surface);
+  box-shadow: var(--pixel-border-pink), var(--drop-sm);
+  animation: pixel-pop var(--duration) var(--ease-out);
+}
+
+.toast__icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.toast__body {
+  min-width: 0;
+}
+
+.toast__title {
+  color: var(--pink-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.toast__text {
+  margin-top: 4px;
+  color: var(--text);
+  font-size: var(--text-base);
+  line-height: 1.35;
+}
+
+/* ------------------------------------------------------------------ modal */
+
+.modal-backdrop {
+  position: fixed;
+  z-index: 200;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: var(--space-5);
+  background: rgba(90, 53, 66, 0.45);
+  animation: fade-in var(--duration) var(--ease-out);
+}
+
+.modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: pixel-pop var(--duration) var(--ease-out);
+}
+
+.modal__code {
+  margin: var(--space-3) 0 var(--space-5);
+  padding: var(--space-4);
+  background: var(--bg-deep);
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  box-shadow: var(--pixel-border);
+  white-space: pre-wrap;
+}
+
+.modal__code .kw {
+  color: var(--lavender-deep);
+}
+
+.modal__code .todo {
+  color: var(--pink-deep);
+}
+
+/* ------------------------------------------------------ screen transitions */
+
+.screen {
+  animation: fade-up var(--duration-slow) var(--ease-out);
+}
+
+/* --------------------------------------------------------------- terminal */
+
+.terminal {
+  padding: var(--space-4);
+  background: var(--bg-deep);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  box-shadow: var(--pixel-border);
+}
+
+.term-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  animation: fade-in var(--duration) var(--ease-out);
+}
+
+.term-line__prefix {
+  flex-shrink: 0;
+  color: var(--pink-deep);
+}
+
+.term-line__text {
+  flex: 1;
+  min-width: 0;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.term-line__status {
+  flex-shrink: 0;
+  color: var(--mint-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+}
+
+.cursor {
+  display: inline-block;
+  width: 10px;
+  height: 1em;
+  margin-left: 3px;
+  background: var(--pink-deep);
+  transform: translateY(2px);
+  animation: blink 0.9s steps(1) infinite;
+}
+
+/* ============================================================================
+ * RESPONSIVE
+ * ========================================================================== */
+
+/* Touch devices: keep the small chrome controls compact but give them a 44px
+ * hit area, expanded vertically only so neighbours can't steal each other's
+ * taps. */
+@media (pointer: coarse) {
+  .version-badge,
+  .icon-btn,
+  .statusbar__egg {
+    position: relative;
+  }
+
+  .version-badge::before,
+  .icon-btn::before,
+  .statusbar__egg::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+
+  /* Flush against the status bar's right padding, so it widens left only. */
+  .statusbar__egg::before {
+    right: 0;
+    left: -28px;
+  }
+}
+
+/* ---- phones ------------------------------------------------------------- */
+@media (max-width: 640px) {
+  :root {
+    --px: 3px;
+  }
+
+  .shell__body {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .card {
+    padding: var(--space-4);
+  }
+
+  .card__title {
+    line-height: 1.9;
+  }
+
+  .titlebar {
+    padding: var(--space-3);
+  }
+
+  .titlebar__dots {
+    display: none;
+  }
+
+  .rail {
+    padding: 0 var(--space-3) var(--space-3);
+  }
+
+  .statusbar {
+    gap: var(--space-3);
+    padding-inline: var(--space-3);
+  }
+
+  .btn {
+    flex: 1 1 100%;
+  }
+
+  .btn-row {
+    gap: var(--space-3);
+  }
+
+  .answer {
+    gap: var(--space-3);
+  }
+
+  /* Field and submit each take a full row rather than squeezing side by side. */
+  .answer__field {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---- small phones (iPhone SE and narrower) ------------------------------ */
+@media (max-width: 380px) {
+  :root {
+    --px: 3px;
+    --space-5: 18px;
+    --space-6: 24px;
+  }
+
+  .shell__body {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  .card {
+    padding: var(--space-3);
+  }
+
+  .titlebar,
+  .statusbar {
+    gap: var(--space-2);
+  }
+
+  /* The hint counter is the first thing to go when space runs out. */
+  .statusbar__item--hints {
+    display: none;
+  }
+}
+
+/* ---- landscape phones: short viewports need vertical breathing room back - */
+@media (max-height: 560px) and (orientation: landscape) {
+  .shell__body {
+    justify-content: flex-start;
+    padding-block: var(--space-4);
+  }
+
+  .btn-row {
+    margin-top: var(--space-4);
+  }
+
+  .btn--lg {
+    min-height: 48px;
+  }
+}
+
+/* ---- tablets ------------------------------------------------------------ */
+@media (min-width: 641px) and (max-width: 899px) {
+  .shell__body {
+    padding: var(--space-6) var(--space-5);
+  }
+}
+
+/* ---- desktop: the bakery box gets a frame ------------------------------- */
+@media (min-width: 900px) {
+  .app {
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .shell {
+    box-shadow: 0 -6px 0 var(--line-bright), 0 6px 0 var(--line-bright),
+      -6px 0 0 var(--line-bright), 6px 0 0 var(--line-bright), 12px 12px 0 var(--shadow-hard);
+  }
+
+  /* The frame is opaque-edged, so the interior needs a wash to stay readable
+   * over the sprinkles without hiding them entirely. */
+  .shell__body {
+    background: rgba(255, 255, 255, 0.55);
+  }
+}
+
+/* ---- large screens: more room around the box, not a wider box ------------ */
+@media (min-width: 1280px) {
+  .app {
+    padding: var(--space-7) var(--space-6);
+  }
+}
