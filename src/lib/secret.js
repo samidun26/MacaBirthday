@@ -13,7 +13,7 @@
  * dependency-free and run unchanged in Node and the browser.
  */
 
-import { canonical, firstLetter } from './text.js';
+import { canonical } from './text.js';
 
 const MAGIC = 'HERv21::';
 
@@ -57,13 +57,15 @@ function base64ToBytes(base64) {
 /* ------------------------------------------------------------------------ the key */
 
 /**
- * The order code produced by the food puzzle — the first letters of the correct dishes.
- * With the default menu this spells CAKE.
+ * The food screen's contribution to the key.
+ *
+ * It used to be derived from which dishes were "correct", but that screen has no wrong
+ * answers any more — she takes whatever she likes. So the key uses a fixed word from the
+ * config instead: never shown, never typed, it just has to stay stable between
+ * `npm run lock` and the reveal.
  */
-export function foodOrderCode(food) {
-  return food.courses
-    .map((course) => firstLetter(course.options[course.correct].name))
-    .join('');
+export function foodKeyword(food) {
+  return canonical(food.keyword || 'NYAM');
 }
 
 /**
@@ -78,7 +80,7 @@ export function deriveKey(config) {
     canonical(binary.word),
     canonical(git.word),
     canonical(design.word),
-    canonical(foodOrderCode(food)),
+    foodKeyword(food),
     canonical(memory.answer),
     canonical(finalAuth.answer),
   ].join('|');
@@ -124,6 +126,7 @@ export function resolveSecret(config) {
   if (!config.secretPayload) {
     return {
       username: config.secretInstagramUsername,
+      password: config.secretInstagramPassword,
       url: config.secretInstagramUrl,
       locked: false,
       error: null,
@@ -134,6 +137,7 @@ export function resolveSecret(config) {
   if (!opened) {
     return {
       username: config.secretInstagramUsername,
+      password: config.secretInstagramPassword,
       url: config.secretInstagramUrl,
       locked: true,
       error:
@@ -142,5 +146,11 @@ export function resolveSecret(config) {
     };
   }
 
-  return { username: opened.username, url: opened.url, locked: true, error: null };
+  return {
+    username: opened.username,
+    password: opened.password,
+    url: opened.url,
+    locked: true,
+    error: null,
+  };
 }

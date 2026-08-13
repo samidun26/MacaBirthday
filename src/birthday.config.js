@@ -48,8 +48,11 @@ export const BIRTHDAY_CONFIG = {
    *    plain-text fields below are ignored and can be blanked out entirely.
    * -------------------------------------------------------------------------------------- */
 
-  secretInstagramUsername: '@her.v21.build', //  ★ CHANGE ME — displayed on the reveal card
-  secretInstagramUrl: 'https://www.instagram.com/her.v21.build/', //  ★ CHANGE ME — the actual link
+  secretInstagramUsername: 'ourglitch.exe', //  ★ the account she logs into
+  secretInstagramPassword: 'angelsunderthebed', //  ★ shown on the reveal card with the username
+  /* The reveal button sends her to Instagram's login page so she can sign in as the
+   * account, rather than to a profile she can only look at. */
+  secretInstagramUrl: 'https://www.instagram.com/accounts/login/',
 
   /* Leave as null for plain-text mode. Paste the output of `npm run lock` here to encrypt. */
   secretPayload: null,
@@ -61,15 +64,17 @@ export const BIRTHDAY_CONFIG = {
    *    Write it in your own voice — this is the part she'll screenshot.
    * -------------------------------------------------------------------------------------- */
 
-  finalMessage: `21 years.
+  finalMessage: `hai bayik aku.
 
-21 years of becoming the person you are today. The programmer. The designer. The food lover. The person who somehow manages to make my life more chaotic and more fun at the same time.
+ciee, udah 21. look at you — becoming the person you are today, and honestly, she's my favourite person.
 
-I couldn't fit everything I love about you into one birthday build. So I made you a little project instead.
+thank you for coming into my life, even if we met this late. we didn't miss anything. we just opened our story at the page where it starts getting good, and I fully intend to make the rest of it louder, sillier and happier than anything either of us has had so far.
 
-Happy 21st birthday ❤️
+maybe I can't give you the world yet. but I hope you're happy with this little thing I built for you, and I hope you enjoy your days with me — and the presents I've been hiding XD
 
-I hope I get to see every version of you that comes next.`,
+I love you so much.
+
+I hope I get to see every version of you that comes next <3`,
 
   /* Small signature line under the message. Set to null to hide. */
   signature: 'built with too many commits, by Dimas', //  ★ CHANGE ME
@@ -126,69 +131,64 @@ I hope I get to see every version of you that comes next.`,
      *
      * The grid is generated from this word, so any A–Z word works. */
     design: {
-      word: 'BASELINE', //  the letters that break the grid spell this
+      word: 'NYAPNYU', //  ★ the letters that break the grid spell this
     },
 
     /* ---- PUZZLE 04 — FOOD --------------------------------------------------------------
-     * A birthday menu. She picks one dish per course — the dish SHE would order.
+     * The canteen tray. She picks whatever she wants, as many as she wants, and there is
+     * no wrong answer — every combination is accepted.
      *
-     * ★ THIS IS THE MOST FUN ONE TO CUSTOMIZE. ★
+     * It's the one screen that isn't a test. It exists so she smiles at a list of her own
+     * favourites halfway through, then carries on.
      *
-     * How the puzzle works: the FIRST LETTERS of the correct dishes spell a word
-     * (by default: C-A-K-E). So there are two ways to solve it — know her taste, or
-     * notice the pattern. Both feel clever.
-     *
-     * If you customize: keep the first letters of the `correct` dishes spelling
-     * something, or set `orderCodeIsWord: false` below and it becomes a pure
-     * "do you know her?" puzzle instead. Either way the app stays in sync.
-     *
-     * `correct` is the index (0, 1 or 2) of the right option in that course. */
+     * Add, remove or reorder anything below freely. `minPicks` is the only rule. */
     food: {
-      restaurantName: 'CAFÉ 21', //  ★ CHANGE ME — try your actual favourite place
-      tagline: 'table for two · reservation under her name',
-      orderCodeIsWord: true, //  set false if your dishes don't spell a word
+      restaurantName: 'KANTIN v21',
+      tagline: 'ambil apa aja · semuanya bener',
+      minPicks: 1, //  she just has to put something on the tray
+      /* A fixed word that feeds the encryption key. It is never shown and never typed —
+       * it only needs to stay the same between `npm run lock` and the reveal. */
+      keyword: 'NYAM',
       courses: [
         {
-          course: 'STARTER',
-          correct: 0,
+          course: 'PEMBUKA',
           options: [
-            { emoji: '🧄', name: 'Cheesy Garlic Bread', note: 'she steals half of mine every time' },
-            { emoji: '🍟', name: 'Truffle Fries', note: 'good, but not the one' },
-            { emoji: '🥠', name: 'Spring Rolls', note: 'ordered once, never again' },
+            { emoji: '🥔', name: 'Perkedel Kentang', note: 'the only correct way to start' },
+            { emoji: '🍗', name: 'Nuggets', note: 'dinosaur shaped if we are lucky' },
+            { emoji: '🍳', name: 'Eyoy', note: 'telur, but said properly' },
           ],
         },
         {
-          course: 'MAIN',
-          correct: 1,
+          course: 'UTAMA',
           options: [
-            { emoji: '🍝', name: 'Carbonara', note: 'a safe choice' },
-            { emoji: '🍗', name: 'Ayam Geprek', note: 'level 5 spicy, no negotiation' },
-            { emoji: '🍜', name: 'Beef Ramen', note: 'for rainy days only' },
+            { emoji: '🍖', name: 'SSB Hj Hesti', note: 'worth every minute of the drive' },
+            { emoji: '🍜', name: 'Bakmi', note: 'any weather, any hour' },
+            { emoji: '🍛', name: 'Nasi Padang', note: 'point at everything, regret nothing' },
+            { emoji: '🍲', name: 'Korean Food', note: 'tteokbokki, bravery level rising' },
+            { emoji: '🍣', name: 'Sushi Salmon', note: 'new obsession, already serious' },
           ],
         },
         {
-          course: 'DESSERT',
-          correct: 2,
+          course: 'MANIS',
           options: [
-            { emoji: '🍫', name: 'Molten Lava Cake', note: 'too rich, she says' },
-            { emoji: '☕', name: 'Tiramisu', note: 'always tempted' },
-            { emoji: '🥧', name: 'Key Lime Pie', note: 'the one she pretends to share' },
+            { emoji: '🍰', name: 'Cheesecake', note: 'non-negotiable' },
+            { emoji: '🍮', name: 'Puding Coklat', note: 'for the in-between days' },
+            { emoji: '🍦', name: 'Es Krim', note: 'shared, allegedly' },
           ],
         },
         {
-          course: 'DRINK',
-          correct: 0,
+          course: 'MINUM',
           options: [
-            { emoji: '🧋', name: 'Es Teh Manis', note: 'the correct answer to everything' },
-            { emoji: '🍵', name: 'Matcha Latte', note: 'for aesthetic reasons' },
-            { emoji: '☕', name: 'Iced Americano', note: 'only during finals week' },
+            { emoji: '🧋', name: 'Teazzi Milk Tea', note: 'the usual order' },
+            { emoji: '🧋', name: 'Chagee Milk Tea', note: 'when we are feeling fancy' },
+            { emoji: '🥤', name: 'Es Teh Manis', note: 'the correct answer to everything' },
           ],
         },
       ],
-      /* Nudges, revealed one at a time by the hint button. */
+      /* There is nothing to solve, so the hints are just encouragement. */
       hints: [
-        'She would never, ever skip dessert.',
-        'Take the first letter of each dish you picked. The right order spells something you put candles on.',
+        'There is no wrong answer on this one. Take whatever you want.',
+        'Seriously. Take all of it. That was the point.',
       ],
     },
 
@@ -201,34 +201,63 @@ I hope I get to see every version of you that comes next.`,
      * case, spaces, punctuation and accents. */
     memory: {
       /* The rows in the results table. `redacted: true` marks the one she must fill in.
-       * Exactly one row should be redacted. Add or remove rows freely. */
+       * Exactly one row should be redacted. */
       records: [
-        { id: 1, key: 'FIRST_MEETING', value: 'Campus library, second floor' }, //  ★ CHANGE ME
-        { id: 2, key: 'FIRST_FOOD', value: 'Instant noodles at 2am' }, //  ★ CHANGE ME
-        { id: 3, key: 'FIRST_TRIP', value: 'The beach, with the bad playlist' }, //  ★ CHANGE ME
-        { id: 4, key: 'FIRST_DATE', value: null, redacted: true }, //  ← the puzzle
-        { id: 5, key: 'INSIDE_JOKE', value: '"it is not a bug"' }, //  ★ CHANGE ME
-        { id: 6, key: 'FAVORITE_PLACE', value: 'Wherever the food is' }, //  ★ CHANGE ME
+        { id: 1, key: 'FIRST_MEET', value: 'My place' },
+        { id: 2, key: 'FIRST_FOOD', value: 'Monster Curry' },
+        { id: 3, key: 'FIRST_DATE', value: 'Fore, Thamrin' },
+        { id: 4, key: 'OUR_DATE', value: null, redacted: true }, //  ← the puzzle
+        { id: 5, key: 'FAVORITE_ACTIVITY', value: 'Ngelon' },
+        { id: 6, key: 'FAVORITE_PLACE', value: 'Wherever the good food is' },
       ],
-      /* The question shown above the input. */
-      question: 'Restore the corrupted row. Where did we go on our first date?',
-      answer: 'The Coffee Shop', //  ★ CHANGE ME — the value of the redacted row
-      alsoAccept: ['coffee shop', 'the coffee shop that plays music too loud'], //  ★ generous alternates
+      question: 'One row came back corrupted. What date did we become us?',
+      answer: '25 July',
+      /* Matching already ignores case, spaces and punctuation — these cover the other
+       * ways she might write a date, so a slash or "Juli" never costs her the puzzle. */
+      alsoAccept: [
+        '25 Juli',
+        'July 25',
+        'Juli 25',
+        '25/7',
+        '25/07',
+        '25-7',
+        '25-07',
+        '25 07',
+        '25th July',
+        'July 25th',
+        '25 July 2025',
+      ],
       hints: [
-        'It is the place you complained was too loud. You went anyway.', //  ★ CHANGE ME
-        'Two words. You still call it that.', //  ★ CHANGE ME
+        'The day the whole thing officially started. Month and day is enough.',
+        'It is July. Now the number.',
       ],
     },
 
     /* ---- FINAL AUTHENTICATION ----------------------------------------------------------
      * "Where is the birthday build deployed?" → Instagram. */
     finalAuth: {
-      question: 'Where is the birthday build deployed?',
-      answer: 'Instagram',
-      alsoAccept: ['ig', 'insta', 'the gram'],
+      question:
+        'Are you happy? And are you ready to keep being happy with me — for the rest of your life?',
+      answer: 'yes',
+      alsoAccept: [
+        'yes i am',
+        'yes i do',
+        'yes always',
+        'iya',
+        'ya',
+        'iya dong',
+        'iya aku mau',
+        'mau',
+        'of course',
+        'always',
+        'absolutely',
+        'i am',
+        'yess',
+        'yup',
+      ],
       hints: [
-        'Not Vercel. Not Netlify. Somewhere you check far more often.',
-        'It has a little camera icon.',
+        'There is only one answer I am hoping for, and it is three letters long.',
+        'Say yes. Please say yes.',
       ],
     },
   },

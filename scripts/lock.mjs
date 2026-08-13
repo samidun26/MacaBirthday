@@ -30,11 +30,11 @@ const pink = (text) => `[38;5;211m${text}[0m`;
 const green = (text) => `[32m${text}[0m`;
 const bold = (text) => `[1m${text}[0m`;
 
-/** `--username x --url y`, for running this non-interactively. */
+/** `--username x --password y --url z`, for running this non-interactively. */
 function readFlags(argv) {
   const flags = {};
   for (let i = 0; i < argv.length; i += 1) {
-    const match = /^--(username|url)(?:=(.*))?$/.exec(argv[i]);
+    const match = /^--(username|password|url)(?:=(.*))?$/.exec(argv[i]);
     if (!match) continue;
     flags[match[1]] = match[2] ?? argv[i + 1] ?? '';
   }
@@ -48,11 +48,12 @@ function readFlags(argv) {
  * `readline`'s question() simply never resolves once the input stream hits EOF — which
  * would hang the script silently for anyone scripting it.
  */
-async function collect(currentUser, currentUrl) {
+async function collect(currentUser, currentPass, currentUrl) {
   const flags = readFlags(process.argv.slice(2));
-  if (flags.username || flags.url) {
+  if (flags.username || flags.password || flags.url) {
     return {
       username: (flags.username || currentUser).trim(),
+      password: (flags.password || currentPass).trim(),
       url: (flags.url || currentUrl).trim(),
     };
   }
@@ -60,9 +61,10 @@ async function collect(currentUser, currentUrl) {
   if (!stdin.isTTY) {
     let piped = '';
     for await (const chunk of stdin) piped += chunk;
-    const [username = '', url = ''] = piped.split(/\r?\n/);
+    const [username = '', password = '', url = ''] = piped.split(/\r?\n/);
     return {
       username: username.trim() || currentUser,
+      password: password.trim() || currentPass,
       url: url.trim() || currentUrl,
     };
   }
@@ -70,9 +72,11 @@ async function collect(currentUser, currentUrl) {
   const rl = createInterface({ input: stdin, output: stdout });
   const username =
     (await rl.question(`  Instagram username ${dim(`[${currentUser}]`)}: `)).trim() || currentUser;
-  const url = (await rl.question(`  Instagram URL ${dim(`[${currentUrl}]`)}: `)).trim() || currentUrl;
+  const password =
+    (await rl.question(`  Instagram password ${dim(`[${currentPass}]`)}: `)).trim() || currentPass;
+  const url = (await rl.question(`  Login URL ${dim(`[${currentUrl}]`)}: `)).trim() || currentUrl;
   rl.close();
-  return { username, url };
+  return { username, password, url };
 }
 
 async function main() {
@@ -82,21 +86,22 @@ async function main() {
   console.log('');
 
   const currentUser = BIRTHDAY_CONFIG.secretInstagramUsername ?? '';
+  const currentPass = BIRTHDAY_CONFIG.secretInstagramPassword ?? '';
   const currentUrl = BIRTHDAY_CONFIG.secretInstagramUrl ?? '';
 
-  const { username, url } = await collect(currentUser, currentUrl);
+  const { username, password, url } = await collect(currentUser, currentPass, currentUrl);
 
-  if (!username || !url) {
-    console.error('\n  Both a username and a URL are required.\n');
+  if (!username || !password || !url) {
+    console.error('\n  A username, a password and a URL are all required.\n');
     process.exit(1);
   }
 
   const key = deriveKey(BIRTHDAY_CONFIG);
-  const payload = encryptSecret({ username, url }, key);
+  const payload = encryptSecret({ username, password, url }, key);
 
   /* Never hand over a payload without proving it opens again. */
   const check = decryptSecret(payload, key);
-  if (!check || check.username !== username || check.url !== url) {
+  if (!check || check.username !== username || check.password !== password || check.url !== url) {
     console.error('\n  Round-trip check failed — not writing anything. Please report this.\n');
     process.exit(1);
   }
@@ -123,6 +128,7 @@ async function main() {
 
   next = next
     .replace(/(\n\s*secretInstagramUsername:\s*)'[^']*'/, "$1''")
+    .replace(/(\n\s*secretInstagramPassword:\s*)'[^']*'/, "$1''")
     .replace(/(\n\s*secretInstagramUrl:\s*)'[^']*'/, "$1''");
 
   writeFileSync(configPath, next, 'utf8');

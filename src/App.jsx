@@ -16,6 +16,7 @@ import { FinalAuth } from './screens/FinalAuth.jsx';
 import { RevealScreen } from './screens/RevealScreen.jsx';
 import { useKonami } from './hooks/useKonami.js';
 import { isSoundEnabled, setSoundEnabled, sound } from './lib/audio.js';
+import { startMusic, stopMusic } from './lib/music.js';
 import { clearState, loadState, saveState } from './lib/storage.js';
 
 /**
@@ -187,7 +188,14 @@ export default function App() {
     const next = !isSoundEnabled();
     setSoundEnabled(next);
     setSoundOn(next);
+    /* The toggle IS the user gesture, which is the only moment iOS Safari will let an
+     * AudioContext start — so the music has to begin here, not from an effect. */
+    if (next) startMusic();
+    else stopMusic();
   }, []);
+
+  /* Never leave a loop running behind a closed screen. */
+  useEffect(() => stopMusic, []);
 
   /* ------------------------------------------------------------------ render */
 
