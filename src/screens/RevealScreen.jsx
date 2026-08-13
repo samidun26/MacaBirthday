@@ -44,6 +44,8 @@ export function RevealScreen({ config, onRestart }) {
       <canvas className="confetti-canvas" ref={canvasRef} aria-hidden="true" />
 
       <section className="screen reveal">
+        <p className="reveal__win">★ you win ★</p>
+
         <div className="reveal__badge">
           <span className="status-dot" aria-hidden="true" />
           Deployment complete

@@ -1,5 +1,10 @@
 /* ============================================================================
- * RESET + PAGE FRAME
+ * RESET + THE CRT
+ *
+ * Everything renders inside a simulated cathode-ray tube: a scrolling neon
+ * grid and a sliced sun behind the content, scanlines and a vignette in front
+ * of it. The overlay sits above every layer including modals, because the
+ * whole screen is meant to be the monitor.
  * ========================================================================== */
 
 *,
@@ -14,56 +19,142 @@
 }
 
 html {
-  -webkit-text-size-adjust: 100%; /* iPhone: don't reflow type on rotate */
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg-deep);
 }
 
 body {
   min-height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: var(--text-base);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  /* No blue flash when she taps things on iOS. */
+  line-height: 1.5;
+  /* Pixel fonts must NOT be smoothed — antialiasing is what makes a bitmap
+   * face look muddy instead of sharp. */
+  -webkit-font-smoothing: none;
+  font-smooth: never;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
+  text-rendering: optimizeSpeed;
 }
 
-/* Two very soft colour washes + a faint dev-tool grid. Fixed so the texture stays
- * put while content scrolls. */
-body::before {
-  content: '';
+/* ---------------------------------------------------------------- backdrop */
+
+.crt-backdrop {
   position: fixed;
-  inset: 0;
   z-index: 0;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
   background:
-    radial-gradient(90ch 60ch at 12% -10%, var(--bg-glow-a), transparent 60%),
-    radial-gradient(80ch 60ch at 108% 110%, var(--bg-glow-b), transparent 60%);
+    radial-gradient(120ch 70ch at 50% 118%, rgba(255, 46, 136, 0.22), transparent 62%),
+    radial-gradient(90ch 60ch at 12% -12%, rgba(124, 58, 237, 0.28), transparent 60%);
 }
 
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
+/* The sun: a disc sliced by horizontal bands, sitting on the horizon. */
+.crt-sun {
+  position: absolute;
+  bottom: 34vh;
+  left: 50%;
+  width: min(360px, 76vw);
+  height: min(360px, 76vw);
+  transform: translateX(-50%);
+  background: var(--sunset);
   opacity: 0.5;
+  border-radius: 50%;
+  /* Slices get wider toward the bottom, the way every 80s poster did it. */
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0 52%,
+    transparent 52% 55%,
+    #000 55% 64%,
+    transparent 64% 68%,
+    #000 68% 76%,
+    transparent 76% 81%,
+    #000 81% 87%,
+    transparent 87% 94%,
+    #000 94% 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0 52%,
+    transparent 52% 55%,
+    #000 55% 64%,
+    transparent 64% 68%,
+    #000 68% 76%,
+    transparent 76% 81%,
+    #000 81% 87%,
+    transparent 87% 94%,
+    #000 94% 100%
+  );
+}
+
+/* The floor. Perspective on the wrapper, translation on the inner layer, so
+ * the scroll is a composited transform rather than a full-page repaint. */
+.crt-grid {
+  position: absolute;
+  bottom: 0;
+  left: -60%;
+  width: 220%;
+  height: 42vh;
+  overflow: hidden;
+  transform: perspective(320px) rotateX(74deg);
+  transform-origin: bottom center;
+  mask-image: linear-gradient(to top, #000 12%, transparent 82%);
+  -webkit-mask-image: linear-gradient(to top, #000 12%, transparent 82%);
+}
+
+.crt-grid__inner {
+  position: absolute;
+  inset: -100% 0 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.016) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(120ch 90ch at 50% 30%, #000 20%, transparent 75%);
-  -webkit-mask-image: radial-gradient(120ch 90ch at 50% 30%, #000 20%, transparent 75%);
+    repeating-linear-gradient(to right, rgba(41, 231, 255, 0.55) 0 2px, transparent 2px 72px),
+    repeating-linear-gradient(to bottom, rgba(255, 46, 136, 0.5) 0 2px, transparent 2px 72px);
+  animation: grid-scroll 2.4s linear infinite;
+  will-change: transform;
+}
+
+/* ----------------------------------------------------------------- overlay */
+
+.crt-overlay {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  pointer-events: none;
+}
+
+.crt-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.32) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: 0.7;
+}
+
+/* Darkened corners — the tube was never flat. */
+.crt-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(140% 110% at 50% 50%, transparent 52%, rgba(0, 0, 0, 0.72) 100%);
+}
+
+.crt-flicker {
+  position: absolute;
+  inset: 0;
+  background: rgba(180, 140, 255, 0.045);
+  animation: flicker 5.5s steps(2, end) infinite;
 }
 
 #root {
   position: relative;
   z-index: 1;
 }
+
+/* ------------------------------------------------------------------ basics */
 
 button {
   font: inherit;
@@ -76,28 +167,46 @@ button {
 input {
   font: inherit;
   color: inherit;
+  border-radius: 0;
 }
 
 a {
-  color: var(--pink);
+  color: var(--magenta);
   text-decoration: none;
 }
 
 ::selection {
-  background: rgba(255, 126, 182, 0.3);
-  color: #fff;
+  background: var(--magenta);
+  color: #12001a;
 }
 
-/* Visible, on-brand focus ring — keyboard users are the target audience here. */
 :focus-visible {
-  outline: 2px solid var(--pink);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
 }
 
 .mono {
   font-family: var(--font-mono);
-  font-variant-ligatures: none;
+}
+
+/* Chunky, squared-off scrollbar. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--violet) var(--bg-deep);
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--bg-deep);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--violet);
+  border: 2px solid var(--bg-deep);
 }
 
 .visually-hidden {
@@ -113,6 +222,11 @@ a {
   border: 0;
 }
 
+/* Red/cyan fringing, like a slightly misconverged tube. */
+.chroma {
+  text-shadow: -2px 0 rgba(255, 40, 90, 0.55), 2px 0 rgba(41, 231, 255, 0.45);
+}
+
 /* ---------------------------------------------------------------- animations */
 
 @keyframes blink {
@@ -126,12 +240,33 @@ a {
   }
 }
 
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 12px, 0);
+@keyframes flicker {
+  0%,
+  92%,
+  100% {
+    opacity: 0.5;
   }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes grid-scroll {
   to {
+    transform: translateY(72px);
+  }
+}
+
+/* Stepped entrance — things snap into place, they don't glide. */
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  100% {
     opacity: 1;
     transform: none;
   }
@@ -146,23 +281,35 @@ a {
   }
 }
 
+@keyframes pixel-pop {
+  0% {
+    transform: scale(0.82);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 @keyframes shake {
   10%,
   90% {
-    transform: translate3d(-2px, 0, 0);
+    transform: translate3d(-3px, 0, 0);
   }
   20%,
   80% {
-    transform: translate3d(3px, 0, 0);
+    transform: translate3d(4px, 0, 0);
   }
   30%,
   50%,
   70% {
-    transform: translate3d(-5px, 0, 0);
+    transform: translate3d(-6px, 0, 0);
   }
   40%,
   60% {
-    transform: translate3d(5px, 0, 0);
+    transform: translate3d(6px, 0, 0);
   }
 }
 
@@ -175,19 +322,41 @@ a {
 @keyframes pulse-ring {
   0% {
     transform: scale(0.7);
-    opacity: 0.9;
+    opacity: 1;
   }
   100% {
-    transform: scale(2.1);
+    transform: scale(2);
     opacity: 0;
   }
 }
 
+/* A bright band sweeping down, like a tube refreshing. */
 @keyframes sheen {
   from {
     transform: translateX(-120%);
   }
   to {
     transform: translateX(220%);
+  }
+}
+
+/* Dims without vanishing — a progress block that blinks to nothing looks broken. */
+@keyframes pulse-block {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes neon-throb {
+  0%,
+  100% {
+    box-shadow: var(--pixel-border-neon), var(--drop-sm), 0 0 18px rgba(255, 46, 136, 0.5);
+  }
+  50% {
+    box-shadow: var(--pixel-border-neon), var(--drop-sm), 0 0 34px rgba(255, 46, 136, 0.95);
   }
 }

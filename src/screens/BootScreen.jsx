@@ -91,7 +91,9 @@ export function BootScreen({ config, onComplete }) {
       role="presentation"
       aria-label="System boot sequence"
     >
-      <div className="boot__brand">her · birthday systems</div>
+      <div className="boot__brand">
+        birthday systems bios · v{config.age}.0 · 64k ram ok
+      </div>
 
       <h1 className="boot__headline">
         {headline.shown}
@@ -115,10 +117,7 @@ export function BootScreen({ config, onComplete }) {
               <span className="term-line__prefix" aria-hidden="true">
                 ✓
               </span>
-              <span
-                className="term-line__text"
-                style={{ color: 'var(--green)', letterSpacing: '0.14em', fontWeight: 500 }}
-              >
+              <span className="term-line__text" style={{ textShadow: '0 0 12px var(--green)' }}>
                 SYSTEM READY
               </span>
             </div>

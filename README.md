@@ -2,7 +2,9 @@
 
 An interactive birthday surprise: five puzzles and a final authentication that unlock a
 secret Instagram account. It's dressed as a piece of developer tooling — boot sequence,
-git diff, type specimen, SQL console — because that's the language she actually speaks.
+git diff, type specimen, SQL console — because that's the language she actually speaks,
+and the whole thing runs inside a simulated CRT: pixel type, neon sunset, scanlines, and
+a scrolling grid horizon.
 
 She solves puzzles → the build "deploys" → the account is revealed → the message lands.
 
@@ -118,6 +120,18 @@ That's the last real test.
 
 ## 5. Notes
 
+**Look and feel.** Early-80s arcade cabinet. Two bitmap typefaces (Press Start 2P for
+headings and chrome, VT323 for body copy and terminals), a synthwave palette, zero rounded
+corners, borders drawn as stacked box-shadows so every edge lands on a whole pixel, buttons
+that drop into their own shadow when pressed, and stepped rather than eased motion. The
+sliced sun and perspective grid sit behind the cabinet; scanlines, vignette and a slow
+flicker sit in front of everything, modals included.
+
+**Fonts are bundled, not fetched** — no third-party request on the critical path, and the
+page renders correctly offline. Both are SIL Open Font License; see
+[LICENSES-FONTS.md](LICENSES-FONTS.md). Only the `latin` subset loads unless the text needs
+`latin-ext`, so it costs about 30 KB.
+
 **Mobile.** Built phone-first and verified on an iPhone viewport: safe-area insets for the
 notch and home indicator, `100dvh` so the layout doesn't jump when Safari's bar collapses,
 16px inputs so iOS never zooms on focus, and 44px touch targets throughout.
@@ -155,12 +169,16 @@ deliberate trade against spoiling it for someone who opens DevTools.
 src/
   birthday.config.js     ← the only file you need to edit
   App.jsx                flow state machine, easter eggs, persistence
-  components/            Shell, PuzzleFrame, HintPanel, Toast, Modal
+  components/            Shell, PuzzleFrame, HintPanel, Toast, Modal, CrtScreen
   screens/               one file per screen, in flow order
   lib/                   puzzle generators, cipher, audio, confetti
-  styles/                tokens → base → components → screens
+  styles/                fonts → tokens → base → components → screens
+  assets/fonts/          Press Start 2P + VT323 (OFL, see LICENSES-FONTS.md)
 scripts/lock.mjs         encrypts the secret behind her answers
 ```
+
+Re-skinning is still a single-file job: the palette, both typefaces, the pixel-border
+recipe and the motion tokens all live at the top of `src/styles/tokens.css`.
 
 `PuzzleFrame` is the chassis every puzzle sits in — header, answer field, wrong-answer
 feedback, hints, success banner, advance button. Puzzles supply only their own middle

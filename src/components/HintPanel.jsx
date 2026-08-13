@@ -36,10 +36,7 @@ export function HintPanel({ hints, onHintUsed }) {
             ◆
           </span>
           <span>
-            <strong className="mono" style={{ fontSize: '0.75rem', letterSpacing: '0.1em' }}>
-              HINT {index + 1}
-              {' · '}
-            </strong>
+            <strong className="hint__label">HINT {index + 1} · </strong>
             {hint}
           </span>
         </p>

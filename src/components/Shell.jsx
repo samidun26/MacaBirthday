@@ -79,7 +79,7 @@ export function Shell({
                 })}
               </div>
               <div className="rail__label">
-                STEP <b>{String(Math.min(currentStep, totalSteps)).padStart(2, '0')}</b>/
+                STAGE <b>{String(Math.min(currentStep, totalSteps)).padStart(2, '0')}</b>/
                 {String(totalSteps).padStart(2, '0')}
               </div>
             </div>

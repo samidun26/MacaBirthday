@@ -1,61 +1,69 @@
 /* ============================================================================
- * DESIGN TOKENS
+ * DESIGN TOKENS — 1983 ARCADE / CRT
  *
- * One palette, one type scale, one set of radii — every component below pulls
- * from here. If you want to re-skin the whole experience (say, her favourite
- * colour instead of pink), this is the only block you need to touch.
+ * Synthwave palette, two pixel typefaces, zero rounded corners, and borders
+ * drawn with stacked box-shadows so every edge lands on a whole pixel.
+ *
+ * Re-skinning the whole experience is still a single-file job: change the
+ * neon values below and everything follows.
  * ========================================================================== */
 
 :root {
-  /* -- surfaces: charcoal, never pure black, so shadows still read ---------- */
-  --bg: #08080b;
-  --bg-glow-a: rgba(255, 126, 182, 0.07);
-  --bg-glow-b: rgba(183, 156, 255, 0.07);
-  --surface: #101016;
-  --surface-2: #16161f;
-  --surface-3: #1d1d28;
+  /* -- surfaces: deep violet-black, the colour of a powered-down CRT -------- */
+  --bg: #08040f;
+  --bg-deep: #04020a;
+  --surface: #150b2b;
+  --surface-2: #1d1039;
+  --surface-3: #2a1750;
 
-  /* -- lines --------------------------------------------------------------- */
-  --border: rgba(255, 255, 255, 0.075);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --border-accent: rgba(255, 126, 182, 0.35);
+  /* -- neon ---------------------------------------------------------------- */
+  --magenta: #ff2e88;
+  --magenta-soft: #ff85bd;
+  --cyan: #29e7ff;
+  --purple: #a855f7;
+  --violet: #7c3aed;
+  --amber: #ffb627;
+  --yellow: #ffe66d;
+  --green: #3dffa0;
+  --red: #ff4d6d;
+  --orange: #ff6b35;
 
   /* -- ink ----------------------------------------------------------------- */
-  --text: #ededf2;
-  --text-dim: #a0a0b2;
-  --text-faint: #676779;
+  --text: #f2ebff;
+  --text-dim: #b9a6e6;
+  --text-faint: #7c68ad;
 
-  /* -- accents: soft, never neon ------------------------------------------- */
-  --pink: #ff7eb6;
-  --pink-soft: #ffb3d4;
-  --lavender: #b79cff;
-  --cyan: #6fe3ff;
-  --green: #67e8a3;
-  --amber: #ffc46b;
-  --red: #ff8a94;
+  /* -- lines --------------------------------------------------------------- */
+  --line: #3b2266;
+  --line-bright: #5a35a0;
+  --line-neon: var(--magenta);
 
-  --accent-gradient: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
-  --accent-gradient-soft: linear-gradient(
-    135deg,
-    rgba(255, 126, 182, 0.16) 0%,
-    rgba(183, 156, 255, 0.16) 100%
-  );
+  /* The classic Outrun sunset, used on the title and reveal. */
+  --sunset: linear-gradient(180deg, var(--yellow) 0%, var(--orange) 42%, var(--magenta) 78%, var(--purple) 100%);
+  --accent-gradient: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
 
   /* -- type ---------------------------------------------------------------- */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue',
-    Arial, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', 'Fira Code',
-    'Roboto Mono', Menlo, Consolas, monospace;
+  --font-display: 'Press Start 2P', 'Courier New', ui-monospace, monospace;
+  --font-body: 'VT323', 'Courier New', ui-monospace, monospace;
+  --font-mono: 'VT323', 'Courier New', ui-monospace, monospace;
 
-  --text-xs: 0.6875rem;
-  --text-sm: 0.8125rem;
-  --text-base: 0.9375rem;
-  --text-lg: 1.0625rem;
-  --text-xl: 1.375rem;
-  --text-2xl: 1.875rem;
-  --text-3xl: 2.75rem;
+  /* Press Start 2P is enormous per em and very wide — display sizes stay small. */
+  --display-xs: 0.5rem;
+  --display-sm: 0.625rem;
+  --display-md: 0.8125rem;
+  --display-lg: 1.125rem;
+  --display-xl: 1.75rem;
+  --display-2xl: 2.5rem;
 
-  /* -- space --------------------------------------------------------------- */
+  /* VT323 is small per em — body sizes run large to compensate. */
+  --text-xs: 0.9375rem;
+  --text-sm: 1.0625rem;
+  --text-base: 1.1875rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2rem;
+
+  /* -- space: multiples of 4, because pixels ------------------------------- */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -64,30 +72,52 @@
   --space-6: 32px;
   --space-7: 48px;
 
-  /* -- shape --------------------------------------------------------------- */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 24px;
+  /* -- shape: none. It's 1983. --------------------------------------------- */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
 
-  /* -- depth --------------------------------------------------------------- */
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 24px 60px -24px rgba(0, 0, 0, 0.9);
-  --shadow-raised: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.8);
-  --glow-pink: 0 0 24px -6px rgba(255, 126, 182, 0.55);
-  --glow-lavender: 0 0 24px -6px rgba(183, 156, 255, 0.5);
+  /* -- pixel borders -------------------------------------------------------
+   * Four offset box-shadows instead of a real border. The corners stay empty,
+   * which is exactly what gives sprite-era UI its notched silhouette. */
+  --px: 4px;
+  --pixel-border: 0 calc(-1 * var(--px)) 0 var(--line-bright),
+    0 var(--px) 0 var(--line-bright), calc(-1 * var(--px)) 0 0 var(--line-bright),
+    var(--px) 0 0 var(--line-bright);
+  --pixel-border-neon: 0 calc(-1 * var(--px)) 0 var(--magenta),
+    0 var(--px) 0 var(--magenta), calc(-1 * var(--px)) 0 0 var(--magenta),
+    var(--px) 0 0 var(--magenta);
+  --pixel-border-cyan: 0 calc(-1 * var(--px)) 0 var(--cyan), 0 var(--px) 0 var(--cyan),
+    calc(-1 * var(--px)) 0 0 var(--cyan), var(--px) 0 0 var(--cyan);
+  --pixel-border-green: 0 calc(-1 * var(--px)) 0 var(--green), 0 var(--px) 0 var(--green),
+    calc(-1 * var(--px)) 0 0 var(--green), var(--px) 0 0 var(--green);
 
-  /* -- motion -------------------------------------------------------------- */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --duration-fast: 140ms;
-  --duration: 260ms;
-  --duration-slow: 520ms;
+  /* Hard offset shadow — no blur ever. */
+  --shadow-hard: rgba(0, 0, 0, 0.65);
+  --drop: 10px 10px 0 var(--shadow-hard);
+  --drop-sm: 4px 4px 0 var(--shadow-hard);
+
+  /* -- glow ---------------------------------------------------------------- */
+  --glow-magenta: 0 0 12px rgba(255, 46, 136, 0.75), 0 0 28px rgba(255, 46, 136, 0.35);
+  --glow-cyan: 0 0 12px rgba(41, 231, 255, 0.7), 0 0 28px rgba(41, 231, 255, 0.3);
+  --glow-green: 0 0 12px rgba(61, 255, 160, 0.7), 0 0 26px rgba(61, 255, 160, 0.3);
+
+  /* -- motion: stepped, never eased ----------------------------------------
+   * `start` matters: with the default `end` direction the first step holds the
+   * FROM value, so a fade-up would sit at opacity 0 for the first third of its
+   * duration and every screen change would flash blank. `start` jumps straight
+   * to the first visible step instead. */
+  --ease-out: steps(4, start);
+  --ease-in-out: steps(4, start);
+  --duration-fast: 80ms;
+  --duration: 160ms;
+  --duration-slow: 380ms;
 
   /* -- layout -------------------------------------------------------------- */
   --shell-width: 760px;
 }
 
-/* Anyone who asked their OS to calm down gets a calm page. */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-fast: 1ms;
@@ -102,5 +132,12 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* The CRT flicker and the scrolling grid are the two things most likely to
+   * bother someone sensitive to motion. Hold them still. */
+  .crt-flicker,
+  .crt-grid__inner {
+    animation: none !important;
   }
 }

@@ -35,8 +35,11 @@ export function isSoundEnabled() {
   return enabled;
 }
 
-/** One soft sine blip. Everything else is built from these. */
-function tone(frequency, { at = 0, duration = 0.12, gain = 0.05, type = 'sine' } = {}) {
+/**
+ * One square-wave blip — the waveform an NES pulse channel actually used.
+ * Square is harsher than sine at equal amplitude, so gains here run lower.
+ */
+function tone(frequency, { at = 0, duration = 0.12, gain = 0.04, type = 'square' } = {}) {
   const ctx = ensureContext();
   if (!ctx) return;
 
@@ -68,26 +71,29 @@ function play(builder) {
 
 export const sound = {
   /** Typewriter / keystroke tick. */
-  tick: () => play(() => tone(880 + Math.random() * 120, { duration: 0.035, gain: 0.014, type: 'square' })),
+  tick: () => play(() => tone(880 + Math.random() * 120, { duration: 0.03, gain: 0.012 })),
   /** Button press. */
-  tap: () => play(() => tone(520, { duration: 0.07, gain: 0.03, type: 'triangle' })),
+  tap: () => play(() => tone(523.25, { duration: 0.06, gain: 0.026 })),
   /** Correct answer. */
   success: () =>
     play(() => {
-      tone(659.25, { duration: 0.14, gain: 0.05 });
-      tone(987.77, { at: 0.1, duration: 0.22, gain: 0.045 });
+      /* Rising third then octave — the classic "item get". */
+      tone(659.25, { duration: 0.09, gain: 0.04 });
+      tone(830.61, { at: 0.08, duration: 0.09, gain: 0.04 });
+      tone(987.77, { at: 0.16, duration: 0.26, gain: 0.038 });
     }),
   /** Wrong answer — a gentle "nope", never harsh. */
   error: () =>
     play(() => {
-      tone(196, { duration: 0.16, gain: 0.04, type: 'triangle' });
-      tone(164.81, { at: 0.09, duration: 0.2, gain: 0.035, type: 'triangle' });
+      /* Two descending steps — "wrong", never punishing. */
+      tone(196, { duration: 0.12, gain: 0.032 });
+      tone(146.83, { at: 0.1, duration: 0.2, gain: 0.028 });
     }),
   /** The final unlock. A little arpeggio worth waiting six puzzles for. */
   unlock: () =>
     play(() => {
-      [523.25, 659.25, 783.99, 1046.5, 1318.51].forEach((frequency, index) => {
-        tone(frequency, { at: index * 0.09, duration: 0.5, gain: 0.05 });
+      [523.25, 659.25, 783.99, 1046.5, 1318.51, 1567.98].forEach((frequency, index) => {
+        tone(frequency, { at: index * 0.085, duration: 0.42, gain: 0.038 });
       });
     }),
 };

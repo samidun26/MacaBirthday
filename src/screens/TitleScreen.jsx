@@ -11,7 +11,7 @@ export function TitleScreen({ config, onStart, onResume, resumeStep }) {
 
   return (
     <section className="screen hero">
-      <p className="hero__eyebrow">build target detected</p>
+      <p className="hero__eyebrow">player 1 detected</p>
 
       <h1 className="hero__title">
         {config.buildCodename} v{config.age}.0
@@ -34,7 +34,7 @@ export function TitleScreen({ config, onStart, onResume, resumeStep }) {
             onStart();
           }}
         >
-          [ Start build ]
+          &#9654; Start build
         </button>
       </div>
 
@@ -53,8 +53,10 @@ export function TitleScreen({ config, onStart, onResume, resumeStep }) {
         </div>
       ) : null}
 
+      <p className="hero__blink">— press start —</p>
+
       <p className="hero__meta">
-        {config.age} modules · 6 checks · 1 recipient
+        {config.age} modules · 6 stages · 1 player
       </p>
     </section>
   );

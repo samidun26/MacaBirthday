@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { BIRTHDAY_CONFIG } from './birthday.config.js';
 import { Shell } from './components/Shell.jsx';
+import { CrtBackdrop, CrtOverlay } from './components/CrtScreen.jsx';
 import { Modal } from './components/Modal.jsx';
 import { ToastLayer } from './components/Toast.jsx';
 import { BootScreen } from './screens/BootScreen.jsx';
@@ -254,6 +255,8 @@ export default function App() {
 
   return (
     <>
+      <CrtBackdrop />
+
       <Shell
         fileName={current.file}
         version={`${config.age}.0.0`}
@@ -272,6 +275,8 @@ export default function App() {
       </Shell>
 
       <ToastLayer toasts={toasts} onExpire={expireToast} />
+
+      <CrtOverlay />
 
       {showTodo ? (
         <Modal title="// notes.txt" onClose={() => setShowTodo(false)}>
