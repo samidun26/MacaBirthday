@@ -55,6 +55,10 @@ export function TitleScreen({ config, onStart, onResume, resumeStep }) {
 
       <p className="hero__blink">— press start —</p>
 
+      {/* Music can't autoplay (browsers block it, and it would be rude anyway), so the
+          title screen points at the toggle. Otherwise she'd never know it was there. */}
+      <p className="hero__sound">♫ turn the sound on — I wrote you a song</p>
+
       <p className="hero__meta">
         {config.age} modules · 6 stages · 1 player
       </p>

@@ -35,6 +35,11 @@ export function isSoundEnabled() {
   return enabled;
 }
 
+/** The music module runs through this same context, so both share one gesture unlock. */
+export function getAudioContext() {
+  return enabled ? ensureContext() : context;
+}
+
 /**
  * One square-wave blip — the waveform an NES pulse channel actually used.
  * Square is harsher than sine at equal amplitude, so gains here run lower.

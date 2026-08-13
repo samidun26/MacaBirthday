@@ -48,15 +48,18 @@ The 15-minute version, in priority order:
 | 01 | Binary → ASCII | `puzzles.binary.word` | Deliberately easy. It teaches the format. |
 | 02 | Git commit | `puzzles.git.word` | The added `+` lines spell it as an acrostic. Any A–Z word works. |
 | 03 | Type specimen | `puzzles.design.word` | A few glyphs sit 3px off the baseline. A **Guides** toggle in the toolbar exposes them. |
-| 04 | Birthday menu | `puzzles.food.courses[].correct` | She picks one dish per course. |
-| 05 | Memory database | `puzzles.memory.answer` | The only puzzle that can't be reasoned out. |
-| — | Final auth | `puzzles.finalAuth.answer` | Answer: Instagram. |
+| 04 | The canteen tray | — | **No wrong answers.** She takes whatever she likes, as much as she likes. |
+| 05 | Memory database | `puzzles.memory.answer` | The only one that can't be reasoned out. |
+| — | Final question | `puzzles.finalAuth.answer` | Not a puzzle. Just the question. |
 
-**Two things worth knowing about puzzle 04.** The first letters of the correct dishes
-spell a word (by default: **C-A-K-E**). That gives her two ways in — knowing her own
-taste, or spotting the pattern — and makes it self-verifying instead of guesswork. If your
-dishes don't spell anything, set `orderCodeIsWord: false` and it becomes a pure "do you
-know her?" puzzle. Everything stays in sync either way.
+**Puzzle 04 is deliberately not a test.** Every dish is selectable, multi-select works
+across every course, and any combination is accepted — the only rule is `minPicks`. It
+exists so that halfway through a set of puzzles she hits a list of her own favourite food
+and just gets to enjoy it. Add, remove and reorder dishes freely; nothing can break.
+
+Because there's no correct answer to derive a key from, the encryption uses
+`puzzles.food.keyword` instead — a fixed word that's never shown and never typed. Leave
+it alone unless you re-run `npm run lock` afterwards.
 
 **Answer matching is forgiving.** Case, spaces, punctuation and accents are all ignored,
 and each puzzle takes a list of `alsoAccept` alternates. Add every phrasing you'd accept —
@@ -77,15 +80,15 @@ before finishing, close that door:
 npm run lock
 ```
 
-It asks for the username and URL, encrypts them behind the answers to her own six puzzles,
-writes the result to `secretPayload`, and blanks the plain-text fields. The account
+It asks for the username, password and login URL, encrypts them behind the answers to her
+own puzzles, writes the result to `secretPayload`, and blanks the plain-text fields. The account
 genuinely cannot be decrypted without solving the puzzles — verified: after locking, the
 handle appears nowhere in `dist/`.
 
 Non-interactive if you prefer:
 
 ```bash
-npm run lock -- --username "@her.secret.acct" --url "https://instagram.com/her.secret.acct/"
+npm run lock -- --username "ourglitch.exe" --password "…" --url "https://www.instagram.com/accounts/login/"
 ```
 
 The answers **are** the key, so re-run `npm run lock` any time you change a puzzle answer.
@@ -125,9 +128,9 @@ chrome, VT323 for body copy and terminals), a buttercream-and-strawberry palette
 rounded corners, borders drawn as stacked box-shadows so every edge lands on a whole pixel,
 buttons that drop into their own shadow when pressed, and stepped rather than eased motion.
 
-The backdrop is hand-drawn pixel art — cakes, cupcakes, flowers, cherries, hearts and
-sparkles as inline SVG on an integer grid with `crispEdges`, so they stay genuinely
-pixel-art at any size instead of blurring. No image files. Cards are opaque, so sprites
+The backdrop is hand-drawn pixel art — cakes, cupcakes, flowers, cherries, hearts,
+sparkles and cats (sitting and loafed) as inline SVG on an integer grid with `crispEdges`,
+so they stay genuinely pixel-art at any size instead of blurring. No image files. Cards are opaque, so sprites
 that land behind one are simply hidden and never fight the text.
 
 **Fonts are bundled, not fetched** — no third-party request on the critical path, and the
@@ -149,8 +152,17 @@ no control under 40px.
 **Progress is saved.** If her phone locks or she closes the tab mid-puzzle, the title screen
 offers to resume. Turn it off with `options.saveProgress: false`.
 
-**Sound is off by default** and never autoplays. The toggle is in the header. Every tone is
-synthesised — no audio files. The experience is designed to be complete in silence.
+**Sound is off by default** and never autoplays — the header toggle is the only thing that
+starts it, which is also the user gesture iOS Safari requires. Turning it on starts an
+original chiptune love song (square lead, triangle bass, soft arpeggio) that loops for as
+long as she's reading, plus the interface blips. Everything is synthesised live in
+`src/lib/music.js` — no audio files, nothing to download.
+
+A note on why it's original: the ask was for a current romantic hit, pixelated. A chiptune
+cover still reproduces the melody, and the melody is the part that's copyrighted — changing
+the instrument doesn't change that. So the tune is written from scratch in the same
+register. The chord movement under it (I–V–vi–IV) is a common progression and isn't
+protectable; the melody on top is ours.
 
 **Reduced motion** is respected everywhere: the boot sequence resolves instantly, confetti
 doesn't run, animations collapse.
@@ -181,7 +193,7 @@ src/
   App.jsx                flow state machine, easter eggs, persistence
   components/            Shell, PuzzleFrame, HintPanel, Toast, Modal, PartyBackdrop
   screens/               one file per screen, in flow order
-  lib/                   puzzle generators, cipher, audio, confetti
+  lib/                   puzzle generators, cipher, audio, music, confetti
   styles/                fonts → tokens → base → components → screens
   assets/fonts/          Press Start 2P + VT323 (OFL, see LICENSES-FONTS.md)
 scripts/lock.mjs         encrypts the secret behind her answers

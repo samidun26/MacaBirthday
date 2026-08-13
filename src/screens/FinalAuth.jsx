@@ -27,13 +27,13 @@ export function FinalAuth({ config, onComplete, onHintUsed }) {
         systemMessage="You've made it this far. Five out of five. There's one thing left to tell me before I hand this over."
         answer={config.puzzles.finalAuth.answer}
         alsoAccept={config.puzzles.finalAuth.alsoAccept}
-        placeholder="deployment target"
-        inputLabel="Deployment target"
-        submitLabel="Authenticate"
+        placeholder="your answer"
+        inputLabel="Your answer"
+        submitLabel="Answer"
         wrongMessages={[
-          'Authentication failed. Where would you actually look for it?',
-          'Not that one. Somewhere you already open every day.',
-          'Denied. Think less "hosting provider", more "app on your phone".',
+          'That is not the answer I was hoping for. Try again?',
+          'Hmm. I will wait.',
+          'Take your time. I already know what I am hoping you type.',
         ]}
         hints={config.puzzles.finalAuth.hints}
         onSolved={() => setPhase('authenticating')}
@@ -45,9 +45,8 @@ export function FinalAuth({ config, onComplete, onHintUsed }) {
           <span className="auth-level__value">BIRTHDAY_ADMIN</span>
         </div>
 
-        <p className="card__lede" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.875rem' }}>
-          {config.puzzles.finalAuth.question}
-        </p>
+        {/* This is the whole point of the screen — it gets to be the biggest thing on it. */}
+        <p className="auth-question">{config.puzzles.finalAuth.question}</p>
       </PuzzleFrame>
     );
   }

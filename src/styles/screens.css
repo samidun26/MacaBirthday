@@ -131,6 +131,14 @@
   animation: blink 1.1s steps(1) infinite;
 }
 
+/* A gentle pointer at the header's sound toggle. */
+.hero__sound {
+  margin-top: var(--space-4);
+  color: var(--lavender-deep);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+}
+
 /* -------------------------------------------------------------- puzzle 01 */
 
 .binary {
@@ -777,6 +785,14 @@
   color: var(--pink-deep);
 }
 
+.auth-question {
+  margin: var(--space-5) 0 var(--space-2);
+  color: var(--text);
+  font-size: var(--text-xl);
+  line-height: 1.4;
+  text-align: center;
+}
+
 .authbar {
   height: 20px;
   margin: var(--space-3) 0;
@@ -930,21 +946,74 @@
   line-height: 2;
 }
 
-.handle {
-  display: inline-flex;
-  align-items: center;
+/* The login card. Each row is a button — tapping copies the value, because retyping
+ * a long password into a phone login form would spoil the moment. */
+.creds {
+  display: grid;
   gap: var(--space-3);
-  max-width: 100%;
   margin-bottom: var(--space-5);
   padding: var(--space-4);
   background: var(--surface);
+  text-align: left;
+  box-shadow: var(--pixel-border-lav), var(--drop-sm);
+  animation: pixel-pop var(--duration-slow) var(--ease-out);
+}
+
+.creds__title {
   color: var(--lavender-deep);
   font-family: var(--font-display);
-  font-size: var(--display-md);
-  line-height: 1.8;
+  font-size: var(--display-xs);
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.cred {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  width: 100%;
+  gap: 2px var(--space-3);
+  padding: var(--space-3);
+  background: var(--bg-deep);
+  text-align: left;
+  box-shadow: 0 -2px 0 var(--line), 0 2px 0 var(--line), -2px 0 0 var(--line), 2px 0 0 var(--line);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.cred:hover {
+  background: var(--surface-3);
+}
+
+.cred:active {
+  transform: translate(2px, 2px);
+}
+
+.cred__label {
+  grid-column: 1;
+  color: var(--text-dim);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.cred__value {
+  grid-column: 1 / -1;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  line-height: 1.3;
   word-break: break-all;
-  box-shadow: var(--pixel-border-lav);
-  animation: pixel-pop var(--duration-slow) var(--ease-out);
+}
+
+.cred__copy {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  color: var(--pink-deep);
+  font-family: var(--font-display);
+  font-size: var(--display-xs);
+  line-height: 1.6;
+  white-space: nowrap;
 }
 
 /* The only thing in the app allowed to breathe. */
