@@ -132,6 +132,21 @@ I hope I get to see every version of you that comes next <3`,
      * The grid is generated from this word, so any A–Z word works. */
     design: {
       word: 'NYAPNYU', //  ★ the letters that break the grid spell this
+
+      /* Shown above the specimen sheet. Its job is to tell her WHAT KIND of word
+       * she's hunting for, without giving away a single letter. */
+      prompt:
+        'This specimen sheet shipped with a visual bug, and the word hiding in it is ' +
+        'one of ours — the thing we always say to each other instead of the three ' +
+        'serious words. Find it.',
+
+      /* Revealed one at a time by the hint button: the first two are about *how* to
+       * look, the last one points at the tool that makes it obvious. */
+      hints: [
+        'Designers notice what everyone else ignores. Look at how the letters sit, not at what they spell.',
+        'Every letter rests on the same line. Almost every letter.',
+        'There is a Guides toggle in the toolbar. Use it — that is exactly what it is for.',
+      ],
     },
 
     /* ---- PUZZLE 04 — FOOD --------------------------------------------------------------

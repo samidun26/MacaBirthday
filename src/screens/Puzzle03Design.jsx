@@ -15,7 +15,7 @@ import { sound } from '../lib/audio.js';
  * glyphs jump straight off the page.
  */
 export function Puzzle03Design({ config, onSolve, onBack, onHintUsed, initiallySolved }) {
-  const { word } = config.puzzles.design;
+  const { word, prompt, hints } = config.puzzles.design;
   const [guides, setGuides] = useState(false);
   const cells = useMemo(() => buildSpecimen(word), [word]);
 
@@ -23,23 +23,22 @@ export function Puzzle03Design({ config, onSolve, onBack, onHintUsed, initiallyS
     <PuzzleFrame
       eyebrow="Puzzle 03 — Visual QA"
       title="Something in here is wrong."
-      systemMessage="This specimen sheet shipped with a visual bug. Nobody on the dev team caught it. Find the word it's hiding."
+      systemMessage={
+        prompt ??
+        "This specimen sheet shipped with a visual bug. Nobody on the dev team caught it. Find the word it's hiding."
+      }
       answer={word}
-      placeholder="the hidden word"
+      placeholder="our word"
       inputLabel="The hidden word"
       submitLabel="File bug"
       wrongMessages={[
         'Not the bug. Keep looking.',
         'Close, but the layout disagrees.',
-        'Designers notice what everyone else ignores. Look again.',
+        'Not that one. It is a word only the two of us use.',
       ]}
-      hints={[
-        'Designers notice what everyone else ignores.',
-        'Every letter sits on a line. Almost every letter.',
-        'There\'s a Guides toggle in the toolbar. Use it — that\'s what it\'s for.',
-      ]}
+      hints={hints}
       successTitle="✓ Visual bug found"
-      successNote="Okay... you noticed it. I guess I shouldn't have underestimated you."
+      successNote="Okay... you found it. I guess I shouldn't have underestimated you."
       nextLabel="Load next module →"
       onNext={onSolve}
       onBack={onBack}
