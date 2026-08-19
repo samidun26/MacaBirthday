@@ -48,14 +48,14 @@ export const BIRTHDAY_CONFIG = {
    *    plain-text fields below are ignored and can be blanked out entirely.
    * -------------------------------------------------------------------------------------- */
 
-  secretInstagramUsername: 'ourglitch.exe', //  ★ the account she logs into
-  secretInstagramPassword: 'angelsunderthebed', //  ★ shown on the reveal card with the username
+  secretInstagramUsername: '', //  ★ the account she logs into
+  secretInstagramPassword: '', //  ★ shown on the reveal card with the username
   /* The reveal button sends her to Instagram's login page so she can sign in as the
    * account, rather than to a profile she can only look at. */
-  secretInstagramUrl: 'https://www.instagram.com/accounts/login/',
+  secretInstagramUrl: '',
 
   /* Leave as null for plain-text mode. Paste the output of `npm run lock` here to encrypt. */
-  secretPayload: null,
+  secretPayload: 'l7CymItvbMGvkiSApTIvgS4NEn/lI7et7cebOljZQIR2pR32j9Deow4aUnyU7iNd7JPlUNIqk8JNqxDQJdv19XNLiJ5qgTZgEpVadl5bfWUQNU7QeVJTRzrbZV8HXEL1PsAABXDEzdCBhLwvR/xgu2mAGM6l',
 
   /* ----------------------------------------------------------------------------------------
    * 3. THE FINAL MESSAGE

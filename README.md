@@ -81,9 +81,18 @@ npm run lock
 ```
 
 It asks for the username, password and login URL, encrypts them behind the answers to her
-own puzzles, writes the result to `secretPayload`, and blanks the plain-text fields. The account
-genuinely cannot be decrypted without solving the puzzles — verified: after locking, the
-handle appears nowhere in `dist/`.
+own puzzles, writes the result to `secretPayload`, and blanks the plain-text fields. After
+locking, neither the handle nor the password appears anywhere in `dist/` — you can't find
+them by opening the page source and searching.
+
+**Be clear about what that does and does not buy you.** The key is derived from the puzzle
+answers, and those answers live in `birthday.config.js`, which ships in the bundle. So the
+credentials are not *searchable*, but they are still *recoverable* by anyone willing to
+read the built JavaScript, find `deriveKey`, collect the six values and run the XOR back.
+It stops a curious person who hits Ctrl+F. It does not stop a determined one.
+
+If the account genuinely matters, treat the URL as semi-public: change the password after
+her birthday, or use an account you're happy for a stranger to reach.
 
 Non-interactive if you prefer:
 

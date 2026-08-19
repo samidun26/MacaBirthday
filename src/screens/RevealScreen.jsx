@@ -24,8 +24,8 @@ const CHANGELOG = [
 
 /**
  * One credential line. Tapping it copies the value — on a phone, retyping
- * "angelsunderthebed" into a login form is exactly the kind of friction that would
- * spoil the moment.
+ * a long password into a login form is exactly the kind of friction that would spoil
+ * the moment.
  */
 function Credential({ label, value }) {
   const [copied, setCopied] = useState(false);
